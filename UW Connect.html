@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank You!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --uw-purple: #4B2E83;
+            --uw-gold: #B7A57A;
+            --uw-metallic-gold: #E8E3D3;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Ticker Section */
+        .ticker-section {
+            text-align: center;
+            margin: 60px 0 80px;
+            min-height: 200px;
+        }
+
+        .ticker-label {
+            font-size: 2rem;
+            color: var(--uw-purple);
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .ticker-display {
+            position: relative;
+            display: inline-block;
+            min-width: 300px;
+            min-height: 100px;
+        }
+
+        .ticker-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--uw-gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .finale-text {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--uw-purple);
+            opacity: 0;
+            transform: scale(0.5);
+            animation: finaleAppear 0.6s ease-out forwards;
+        }
+
+        @keyframes finaleAppear {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Confetti */
+        .confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Message Section */
+        .message-section {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 60px;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .message-section.visible {
+            animation: slideUp 0.8s ease-out forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-section p {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            color: #555;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(75, 46, 131, 0.1);
+            border-left: 5px solid var(--uw-purple);
+        }
+
+        /* Request List */
+        .request-list-section {
+            opacity: 0;
+            margin-top: 60px;
+        }
+
+        .request-list-section.visible {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .list-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--uw-purple);
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .request-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .request-item {
+            background: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            font-weight: 500;
+            color: var(--uw-purple);
+            border: 2px solid var(--uw-metallic-gold);
+            transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0;
+            animation: cascadeIn 0.5s ease-out forwards;
+        }
+
+        .request-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(75, 46, 131, 0.15);
+        }
+
+        @keyframes cascadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .request-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .ticker-label {
+                font-size: 1.6rem;
+            }
+            
+            .ticker-number {
+                font-size: 3rem;
+            }
+            
+            .finale-text {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .request-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .ticker-label {
+                font-size: 1.3rem;
+            }
+            
+            .ticker-number {
+                font-size: 2.5rem;
+            }
+            
+            .finale-text {
+                font-size: 2rem;
+            }
+            
+            .message-section p {
+                font-size: 1.1rem;
+                padding: 20px;
+            }
+            
+            .list-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .request-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        /* Support Link */
+        .support-link-section {
+            text-align: center;
+            margin: 40px 0 60px;
+            opacity: 0;
+        }
+
+        .support-link-section.visible {
+            animation: fadeIn 1s ease-out forwards;
+        }
+
+        .support-link {
+            display: inline-block;
+            font-size: 1.1rem;
+            color: var(--uw-purple);
+            text-decoration: none;
+            padding: 15px 30px;
+            background: white;
+            border: 2px solid var(--uw-gold);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .support-link:hover {
+            background: var(--uw-purple);
+            color: white;
+            border-color: var(--uw-purple);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(75, 46, 131, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+    
+    <div class="container">
+        <div class="ticker-section">
+            <div class="ticker-label">Thank you for helping with...</div>
+            <div class="ticker-display" id="tickerDisplay">
+                <div class="ticker-number" id="tickerNumber">REQ0000000</div>
+            </div>
+        </div>
+
+        <div class="message-section" id="messageSection">
+            <p id="heartfeltMessage">
+                <!-- PASTE YOUR HEARTFELT MESSAGE HERE -->
+                The UW Connect team has been an instrumental group that helps our team at the College of Arts and Sciences Administrative Support Team to efficiently manage and process thousands of requests per quarter. I truly appreciate the support, the patience, and the willingness to explore solutions that work for our team!
+            </p>
+
+            <p style="margin-top: 2rem">
+               Shoutout to the following team members: Rachael, Shea, Esther, Juan, Faizan, and everyone who helped with our requests! 
+            </p>
+        </div>
+
+        <div class="request-list-section" id="requestListSection">
+            <h2 class="list-title">All the Requests You've Helped With</h2>
+            <div class="request-grid" id="requestGrid"></div>
+        </div>
+
+        <div class="support-link-section">
+            <a href="https://uwconnect.uw.edu/now/nav/ui/classic/params/target/u_simple_requests_list.do%3Fsysparm_query%3Du_caller%253D5991861f6f87da00bd49d5267b3ee45b%255Eu_orgs%253D51af60a86f2a110054aafd16ad3ee4d0%255Eassignment_group%253D9d86827597693958e88df7300153af8c%255EORassignment_group%253D79cfa0a86f2a110054aafd16ad3ee4fc%26sysparm_first_row%3D1%26sysparm_view%3D" target="_blank" class="support-link">View Full Request Details →</a>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // PASTE YOUR 73 REQUEST NUMBERS HERE
+        // ========================================
+        const requestNumbers = [
+            'REQ014039040',
+            'REQ014015977',
+            'REQ013979233',
+            'REQ013979191',
+            'REQ013979174',
+            'REQ013878671',
+            'REQ013861323',
+            'REQ013861318',
+            'REQ013847363',
+            'REQ013841896',
+            'REQ013816244',
+            'REQ013807400',
+            'REQ013807387',
+            'REQ013762676',
+            'REQ013756507',
+            'REQ013754412',
+            'REQ013743435',
+            'REQ013718643',
+            'REQ013652198',
+            'REQ013639387',
+            'REQ013496095',
+            'REQ013434231',
+            'REQ013424431',
+            'REQ013417821',
+            'REQ013395539',
+            'REQ013395094',
+            'REQ013251873',
+            'REQ013232466',
+            'REQ013224750',
+            'REQ012489411',
+            'REQ012325965',
+            'REQ012254396',
+            'REQ011998359',
+            'REQ011902567',
+            'REQ011640572',
+            'REQ011636073',
+            'REQ011025049',
+            'REQ011003657',
+            'REQ010921429',
+            'REQ010840354',
+            'REQ010642946',
+            'REQ010147148',
+            'REQ009341065',
+            'REQ009284269',
+            'REQ009272701',
+            'REQ009236636',
+            'REQ009107455',
+            'REQ009059928',
+            'REQ009006193',
+            'REQ008708053',
+            'REQ008573204',
+            'REQ008560855',
+            'REQ008537762',
+            'REQ008468687',
+            'REQ008210273',
+            'REQ008178033',
+            'REQ008145989',
+            'REQ008145824',
+            'REQ008120267',
+            'REQ007986105',
+            'REQ007930980',
+            'REQ007896864',
+            'REQ007618084',
+            'REQ007473651',
+            'REQ007277419',
+            'REQ007275676',
+            'REQ007101476',
+            'REQ007096491',
+            'REQ007076676',
+            'REQ007068446',
+            'REQ007068082',
+            'REQ007025116',
+            'REQ006869649',
+            'REQ006834233'
+        ];
+
+        // ========================================
+        // ANIMATION CONFIGURATION
+        // ========================================
+        const TOTAL_DURATION = 10000; // 10 seconds total
+        const tickerElement = document.getElementById('tickerNumber');
+        const tickerDisplay = document.getElementById('tickerDisplay');
+        const messageSection = document.getElementById('messageSection');
+        const requestListSection = document.getElementById('requestListSection');
+        const requestGrid = document.getElementById('requestGrid');
+
+        // ========================================
+        // TICKER ANIMATION
+        // ========================================
+        function startTicker() {
+            let currentIndex = 0;
+            const totalNumbers = requestNumbers.length;
+            
+            // Calculate timing for acceleration
+            // Using exponential easing for acceleration
+            function getDelay(index) {
+                const progress = index / totalNumbers;
+                // Exponential curve: starts slow, ends fast
+                const easedProgress = Math.pow(progress, 2);
+                const minDelay = 30;  // Fastest (50ms)
+                const maxDelay = 150; // Slowest (300ms)
+                return maxDelay - (easedProgress * (maxDelay - minDelay));
+            }
+
+            function updateTicker() {
+                if (currentIndex < totalNumbers) {
+                    tickerElement.textContent = requestNumbers[currentIndex];
+                    currentIndex++;
+                    setTimeout(updateTicker, getDelay(currentIndex));
+                } else {
+                    // Ticker complete - trigger BOOM
+                    setTimeout(triggerBoom, 200);
+                }
+            }
+
+            updateTicker();
+        }
+
+        // ========================================
+        // CONFETTI EFFECT
+        // ========================================
+        function triggerBoom() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // Get ticker position for localized confetti
+            const tickerRect = tickerDisplay.getBoundingClientRect();
+            const centerX = tickerRect.left + tickerRect.width / 2;
+            const centerY = tickerRect.top + tickerRect.height / 2;
+
+            const confettiColors = ['#4B2E83', '#B7A57A', '#E8E3D3'];
+            const confettiPieces = [];
+            const confettiCount = 100;
+
+            class Confetti {
+                constructor() {
+                    this.x = centerX;
+                    this.y = centerY;
+                    this.size = Math.random() * 8 + 4;
+                    this.speedX = (Math.random() - 0.5) * 10;
+                    this.speedY = (Math.random() - 0.5) * 10 - 5;
+                    this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                    this.rotation = Math.random() * 360;
+                    this.rotationSpeed = (Math.random() - 0.5) * 10;
+                    this.gravity = 0.3;
+                    this.opacity = 1;
+                }
+
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    this.speedY += this.gravity;
+                    this.rotation += this.rotationSpeed;
+                    this.opacity -= 0.01;
+                }
+
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.rotation * Math.PI / 180);
+                    ctx.globalAlpha = this.opacity;
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    ctx.restore();
+                }
+            }
+
+            for (let i = 0; i < confettiCount; i++) {
+                confettiPieces.push(new Confetti());
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                confettiPieces.forEach((piece, index) => {
+                    piece.update();
+                    piece.draw();
+                    
+                    if (piece.opacity <= 0) {
+                        confettiPieces.splice(index, 1);
+                    }
+                });
+
+                if (confettiPieces.length > 0) {
+                    requestAnimationFrame(animateConfetti);
+                }
+            }
+
+            animateConfetti();
+
+            // Replace ticker with finale text
+            tickerElement.className = 'finale-text';
+            tickerElement.textContent = 'a lot of requests!';
+
+            // Show message after 3 seconds
+            setTimeout(() => {
+                messageSection.classList.add('visible');
+                
+                // Show request list after 2 more seconds
+                setTimeout(() => {
+                    requestListSection.classList.add('visible');
+                    populateRequestGrid();
+                    
+                    // Show support link after grid items finish cascading
+                    const cascadeDuration = requestNumbers.length * 20; // 0.02s per item = 20ms
+                    setTimeout(() => {
+                        document.querySelector('.support-link-section').classList.add('visible');
+                    }, cascadeDuration + 500);
+                }, 2000);
+            }, 3000);
+        }
+
+        // ========================================
+        // POPULATE REQUEST GRID
+        // ========================================
+        function populateRequestGrid() {
+            requestNumbers.forEach((reqNum, index) => {
+                const item = document.createElement('div');
+                item.className = 'request-item';
+                item.textContent = reqNum;
+                item.style.animationDelay = `${index * 0.02}s`;
+                requestGrid.appendChild(item);
+            });
+        }
+
+        // ========================================
+        // START ANIMATION ON PAGE LOAD
+        // ========================================
+        window.addEventListener('load', () => {
+            setTimeout(startTicker, 500);
+        });
+
+        // Handle window resize for confetti canvas
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('confettiCanvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
